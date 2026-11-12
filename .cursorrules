@@ -1,0 +1,34 @@
+# DJ Website — Project Context for Cursor
+
+## Stack
+- Next.js 14+ (App Router), TypeScript, Tailwind CSS
+- Content: Sanity (or Contentful) for presskit bio/photos/tech rider
+- Payments: Stripe Checkout for merch (no custom cart state — use Stripe-hosted checkout)
+- Booking: form → Resend (email) OR Calendly embed — no custom calendar/scheduling logic
+- Radio: embedded player only (Mixcloud / SoundCloud / Azuracast) — never build custom streaming infra
+
+## Site map (do not add pages outside this list without asking)
+- `/`            — hero, latest mix embed, upcoming shows list
+- `/presskit`    — bio, photo gallery, tech rider, downloadable press kit (PDF/ZIP)
+- `/book`        — booking form or embedded scheduler
+- `/merch`       — Stripe-powered product grid + checkout
+- `/radio`       — embedded live/past sets player
+
+## Conventions
+- Server Components by default; only use `"use client"` when the component needs interactivity (forms, players, cart buttons)
+- Keep each route's logic self-contained in its `app/<route>/` folder — don't cross-import merch logic into presskit, etc.
+- Styling: Tailwind utility classes only, no separate CSS files unless truly global
+- Env vars go in `.env.local`, never hardcode API keys (Stripe, Sanity, Resend)
+- Forms: validate with `zod`, submit via server actions where possible instead of client-side fetch to custom API routes
+
+## Build order (follow this sequence)
+1. Layout + nav/footer, deploy skeleton to Vercel
+2. `/presskit` (static content, quick win)
+3. `/radio` (embed only)
+4. `/book` (form + email or Calendly embed)
+5. `/merch` (Stripe products + checkout + webhook) — build last, most complex
+
+## Out of scope for v1
+- Custom cart/checkout UI (use Stripe Checkout redirect)
+- Custom calendar/availability system (use Calendly/Cal.com embed)
+- Self-hosted audio streaming server
